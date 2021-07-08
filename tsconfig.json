@@ -18,5 +18,8 @@
         "removeComments": true,
         "strict": true,
         "target": "ES6"
-    }
+    },
+    "exclude": [
+        ".git", ".github", "dist", "node_modules"
+    ]
 }
