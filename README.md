@@ -7,7 +7,7 @@
 ## Functional requirements
 
 Accept incoming HTTP requests containing one file each in the request body and upload these files to an S3 bucket.  
-In case the file in the request body is an image the service is required to resize it to one of the following dimentions:  
+In case the file in the request body is an image the service is required to resize it to one of the following dimensions:  
 
 - 2048 x 2048
 - 1024 x 1024
