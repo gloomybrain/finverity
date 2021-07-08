@@ -7,8 +7,7 @@ services:
       context: ./
       dockerfile: ./dev.Dockerfile
     command: npm run dev:start
-    environment:
-      NODE_ENV: ${NODE_ENV}
+    env_file: .env
     volumes:
       - type: bind
         source: ./src

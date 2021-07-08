@@ -3,9 +3,9 @@
         "baseUrl": "./",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "incremental": true,
         "inlineSourceMap": true,
         "moduleResolution": "Node",
+        "module": "CommonJS",
         "noImplicitAny": true,
         "noImplicitOverride": true,
         "noImplicitReturns": true,
@@ -20,6 +20,6 @@
         "target": "ES6"
     },
     "exclude": [
-        ".git", ".github", "dist", "node_modules"
+        ".git", ".github", ".vscode", "dist", "node_modules"
     ]
 }
