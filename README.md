@@ -1,4 +1,8 @@
-# The task
+# HTTP to S3 file uploader
+
+## Overall status
+
+![CI status](https://github.com/gloomybrain/finverity/actions/workflows/main.yml/badge.svg)
 
 ## Functional requirements
 
