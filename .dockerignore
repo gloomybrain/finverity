@@ -1,0 +1,10 @@
+**/*
+
+!src
+!test
+
+!.eslintignore
+!.eslintrc.js
+!package.json
+!package-lock.json
+!tsconfig.json
