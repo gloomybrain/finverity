@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
+import { Readable } from 'stream';
 import { ConfigService } from './config.service';
 
 @Injectable()
 export class AppService {
 
-    static get CONTENT_DISPOSITION() {
+    static get CONTENT_DISPOSITION(): string {
         return 'inline';
     }
 
-    static get ACL() {
+    static get ACL(): string {
         return 'public-read';
     }
 
@@ -22,7 +23,7 @@ export class AppService {
         });
     }
 
-    async upload(fileName: string, file: Buffer, mimeType: string): Promise<object> {
+    async upload(fileName: string, file: Readable, mimeType: string): Promise<S3.ManagedUpload.SendData> {
         const s3Response = await this.s3.upload({
             Key: fileName,
             Body: file,

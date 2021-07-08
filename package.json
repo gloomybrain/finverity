@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc",
-    "start": "node dst/main.js",
+    "start": "node dist/src/main.js",
     "pretest": "npm run dev:lint",
     "test": "npm run dev:test",
-    "dev:start": "ts-node-dev --inspect=0.0.0.0:9229 --interval 2000 --debounce 3000 --no-deps --no-notify --watch api-spec/,src/ src/main.ts",
+    "dev:start": "ts-node-dev --inspect=0.0.0.0:9229 --interval 2000 --debounce 3000 --no-deps --no-notify --watch src/ src/main.ts",
     "dev:lint": "eslint src/ --ext .ts",
     "dev:test": "./node_modules/.bin/mocha --require ts-node/register test/**/*.spec.ts"
   },
@@ -21,13 +21,14 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@types/sharp": "^0.28.4",
     "aws-sdk": "^2.942.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "sharp": "^0.28.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.2",
-    "@types/aws-sdk": "^2.7.0",
     "@types/express": "^4.17.13",
     "@types/mocha": "^8.2.3",
     "@types/node": "^16.0.1",
