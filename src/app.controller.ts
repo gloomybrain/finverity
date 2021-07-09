@@ -1,8 +1,10 @@
-import { BadRequestException, Body, Controller, Headers, Param, Post } from '@nestjs/common';
+import { BadRequestException, Controller, Headers, Param, Post, Query, Req } from '@nestjs/common';
 import { Readable } from 'stream';
 import { S3 } from 'aws-sdk';
 import { AppService } from './app.service';
 import { ConfigService } from './config.service';
+import { Request } from 'express';
+import sharp = require('sharp');
 
 @Controller('upload')
 export class AppController {
@@ -16,21 +18,16 @@ export class AppController {
         @Headers('Content-Type') mimeType: string,
         @Headers('Content-Length') fileSize: string,
         @Param('fileName') fileName: string,
-        @Body() file: Readable
+        @Query('size') imageSize: string | undefined,
+        @Req() request: Request
     ): Promise<S3.ManagedUpload.SendData | null> {
-        this.checkMimeType(mimeType);
         this.checkFileSize(fileSize);
+        this.checkMimeType(mimeType);
+        this.checkImageSize(imageSize);
 
-        return this.appService.upload(fileName, file, mimeType);
-    }
+        const fileStream = this.getFileStream(mimeType, imageSize, request);
 
-    private checkMimeType(mimeType: string) {
-        const acceptableMimeTypes = this.config.acceptedContentTypes;
-        if (!acceptableMimeTypes.includes(mimeType)) {
-            const errorMessage = `${mimeType} is not an acceptable MIME type: [${acceptableMimeTypes.toString()}]`;
-
-            throw new BadRequestException({ error: errorMessage });
-        }
+        return this.appService.upload(fileName, fileStream, mimeType);
     }
 
     private checkFileSize(fileSizeHeader: string) {
@@ -47,5 +44,46 @@ export class AppController {
 
             throw new BadRequestException({ error: errorMessage });
         }
+    }
+
+    private checkMimeType(mimeType: string) {
+        const acceptableMimeTypes = this.config.acceptedMimeTypes;
+        if (!acceptableMimeTypes.has(mimeType)) {
+            const errorMessage = `${mimeType} is not an acceptable MIME type: [${acceptableMimeTypes.toString()}]`;
+
+            throw new BadRequestException({ error: errorMessage });
+        }
+    }
+
+    private checkImageSize(imageSize: string | undefined) {
+        if (typeof imageSize === 'undefined') {
+            return;
+        }
+
+        const supportedImageSizes = this.config.supportedImageSizes;
+        if (supportedImageSizes.has(imageSize)) {
+            return;
+        }
+
+        const errorMessage = `Unsupported image size: ${imageSize}`;
+
+        throw new BadRequestException({ error: errorMessage });
+    }
+
+    private getFileStream(mimeType: string, imageSize: string | undefined, request: Request): Readable {
+        if (typeof imageSize === 'undefined') {
+            return request;
+        }
+
+        const imageMimeTypes = this.config.imageMimeTypes;
+        if (!imageMimeTypes.has(mimeType)) {
+            return request;
+        }
+
+        const supportedImageSizes = this.config.supportedImageSizes;
+        const dimensions = supportedImageSizes.get(imageSize) as { width: number, height: number };
+        const transformer = sharp().resize({fit: sharp.fit.contain, ...dimensions});
+
+        return request.pipe(transformer);
     }
 }

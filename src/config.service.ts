@@ -12,15 +12,17 @@ export class ConfigService {
         return value;
     }
 
-    private static readEnvList(varName: string): Array<string> {
+    private static readEnvList(varName: string): Set<string> {
         const value = ConfigService.readEnvString(varName);
 
-        const result = value.split(',');
-        result.forEach(value => {
-            if (value.length === 0) {
-                throw new Error(`Expected ${varName} to be a list of non-empty strings, got ${value}`);
-            }
-        });
+        const result = value
+            .split(',')
+            .filter(key => key.length > 0)
+            .reduce((set, key) => {
+                set.add(key);
+
+                return set;
+            }, new Set<string>());
 
         return result;
     } 
@@ -39,6 +41,12 @@ export class ConfigService {
     readonly awsKey = ConfigService.readEnvString('AWS_ACCESS_KEY');
     readonly awsSecret = ConfigService.readEnvString('AWS_SECRET_ACCESS_KEY');
     readonly awsS3Bucket = ConfigService.readEnvString('AWS_S3_BUCKET_NAME');
-    readonly acceptedContentTypes = ConfigService.readEnvList('APP_ACCEPTED_CONTENT_TYPES');
+    readonly acceptedMimeTypes = ConfigService.readEnvList('APP_ACCEPTED_CONTENT_TYPES');
     readonly maxFileSizeMb = ConfigService.readEnvNumber('APP_MAX_FILE_SIZE_MB');
+    readonly supportedImageSizes: ReadonlyMap<string, { width: number, height: number }> = new Map([
+        ['large', { width: 2048, height: 2048}],
+        ['medium', { width: 1024, height: 1024}],
+        ['thumb', { width: 300, height: 300}]
+    ]);
+    readonly imageMimeTypes = new Set(['image/jpeg', 'image/png']);
 }
